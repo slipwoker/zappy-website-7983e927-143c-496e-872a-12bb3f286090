@@ -1,0 +1,47 @@
+# Business — Generative Engine Optimization Map
+
+---
+
+## Pages
+
+### Home
+https://example.com
+Dive into 600+ free unblocked games playable anywhere. No downloads, no restrictions—just pure gaming fun in your browser. Start playing now!
+
+### Games
+https://example.com/games
+Explore our collection of 600+ free online browser games. From action to puzzles, poker to adventure—find your next favorite game and play instantly.
+
+### About
+https://example.com/about
+Discover why thousands choose us for unblocked gaming. We&#39;re dedicated to providing free, accessible entertainment with 600+ games for every player.
+
+### Contact
+https://example.com/contact
+Have questions or game requests? Contact our team today! We&#39;re here to enhance your online gaming experience and help you find the perfect game to play.
+
+## Legal & Policy
+
+### Privacy Policy
+https://example.com/privacy
+Information about how user data is collected, stored, and protected.
+
+### Terms & Conditions
+https://example.com/terms
+Legal terms describing service usage, rights, and policies.
+
+### Accessibility Statement
+https://example.com/accessibility
+Information about WCAG compliance and accessibility features.
+
+---
+
+# Business Context (for LLM understanding)
+
+## About Business
+---
+
+# Additional Resources
+
+- **Sitemap**: https://example.com/sitemap.xml
+- **Robots.txt**: https://example.com/robots.txt

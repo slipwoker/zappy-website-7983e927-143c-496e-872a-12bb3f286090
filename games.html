@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>Browse Our Massive Game Library — glol.games.//123.com</title>
+    <meta name="description" content="Explore our collection of 600+ free online browser games. From action to puzzles, poker to adventure—find your next favorite game and play instantly.">
+    <meta name="keywords" content="free poker websites, online browser games, gaming website, free online games, browser game collection">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: '7983e927-143c-496e-872a-12bb3f286090',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="Browse Our Massive Game Library — glol.games.//123.com">
+  <meta property="og:description" content="Explore our collection of 600+ free online browser games. From action to puzzles, poker to adventure—find your next favorite game and play instantly.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Browse Our Massive Game Library — glol.games.//123.com">
+  <meta name="twitter:description" content="Explore our collection of 600+ free online browser games. From action to puzzles, poker to adventure—find your next favorite game and play instantly.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: #333 !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))), .sub-menu:not(:has(li)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .sub-menu.mobile-expanded { max-height: 500px !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-light) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-light) !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-light) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      #mic-access-tool-general-button, .mic-access-tool-general-button,
+      #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+      ._access-icon, #mic-access-tool-box, .mic-access-tool-box,
+      #mic-init-access-tool #mic-access-tool-box, div[id*="mic-access-tool-box"], ._access-menu {
+        display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
+      }
+    </style>
+</head>
+<body>
+
+  <nav class="navbar">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewbox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewbox="0 0 24 24" fill="none" style="display:none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+  
+  <button class="phone-header-btn" aria-label="Call">
+    <svg width="20" height="20" viewbox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+  
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/" class="logo-link">
+        <img src="/assets/glol-games-123-com-online-gaming-logo.webp" alt="glol.games.//123.com" class="logo">
+      </a>
+    </div>
+    
+    <ul class="nav-menu" id="navMenu"><li><a href="/games">Games</a></li><li><a href="/about">About</a></li></ul>
+    
+    <div class="nav-cta-container">
+      <a href="/contact" class="nav-cta-btn">Contact</a>
+    </div>
+  </div>
+</nav>
+  
+  <main>
+    <section class="games-masthead-section" data-layout-spec="Games-masthead">
+  <div class="games-masthead-content-wrapper">
+    <div class="games-masthead-title-area">
+      <h1>All Games</h1>
+      <h3>A static library page—built for browsing, not fussing.</h3>
+      <p>Explore a large set of unblocked games presented in consistent, readable grids.</p>
+    </div>
+    <div class="games-masthead-decorative-backplate" aria-hidden="true"></div>
+  </div>
+  <div class="games-masthead-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 80" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 L0,60 L40,60 L40,50 L80,50 L80,40 L120,40 L120,30 L160,30 L160,40 L200,40 L200,50 L240,50 L240,60 L280,60 L280,50 L320,50 L320,40 L360,40 L360,30 L400,30 L400,40 L440,40 L440,50 L480,50 L480,60 L520,60 L520,50 L560,50 L560,40 L600,40 L600,30 L640,30 L640,40 L680,40 L680,50 L720,50 L720,60 L760,60 L760,50 L800,50 L800,40 L840,40 L840,30 L880,30 L880,40 L920,40 L920,50 L960,50 L960,60 L1000,60 L1000,50 L1040,50 L1040,40 L1080,40 L1080,30 L1120,30 L1120,40 L1160,40 L1160,50 L1200,50 L1200,80 Z" fill="var(--bg-light)"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="games-gallery-section" data-layout-spec="Games-gallery">
+  <div class="games-gallery-container">
+    <div class="games-gallery-header">
+      <h2>Browse the Library</h2>
+      <p>A consistent card grid so you can scan quickly.</p>
+    </div>
+    <div class="games-gallery-grid">
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-1" data-context="Action-packed racing game screenshot with futuristic neon cars speeding through a cyberpunk cityscape at night, vibrant purple and cyan lighting" width="600" height="400" src="/assets/site-games-gallery-image-1.webp" alt="Neon Racer game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Neon Racer</h3>
+          <p>High-speed arcade racing through glowing cyberpunk streets.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-2" data-context="Fantasy puzzle game with colorful magical gems and crystals arranged on an enchanted board, glowing effects and sparkles" width="600" height="400" src="/assets/site-games-gallery-image-2.webp" alt="Crystal Quest game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Crystal Quest</h3>
+          <p>Match enchanted gems to unlock ancient magical powers.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-3" data-context="Space shooter game with spacecraft firing lasers at alien invaders, stars and planets in deep space background" width="600" height="400" src="/assets/site-games-gallery-image-3.webp" alt="Galactic Defender game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Galactic Defender</h3>
+          <p>Protect the galaxy from waves of alien invaders.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-4" data-context="Medieval strategy game showing a castle fortress with knights and armies on a battlefield, dramatic lighting" width="600" height="400" src="/assets/site-games-gallery-image-4.webp" alt="Kingdom Clash game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Kingdom Clash</h3>
+          <p>Build your empire and conquer rival kingdoms in epic battles.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-5" data-context="Platformer game with cartoon character jumping between floating islands in a colorful sky world" width="600" height="400" src="/assets/site-games-gallery-image-5.webp" alt="Sky Runner game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Sky Runner</h3>
+          <p>Leap through floating islands in this endless platformer adventure.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-6" data-context="Zombie survival game showing abandoned city streets with zombies and survival weapons, dark atmospheric lighting" width="600" height="400" src="/assets/site-games-gallery-image-6.webp" alt="Zombie Outbreak game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Zombie Outbreak</h3>
+          <p>Survive the undead apocalypse in this intense action shooter.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-7" data-context="Sports game showing soccer players on a bright green field during an exciting match moment" width="600" height="400" src="/assets/site-games-gallery-image-7.webp" alt="Soccer Champions game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Soccer Champions</h3>
+          <p>Lead your team to victory in fast-paced soccer matches.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-8" data-context="Mystery detective game with magnifying glass examining clues in a Victorian-era study room" width="600" height="400" src="/assets/site-games-gallery-image-8.webp" alt="Detective Mystery game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Detective Mystery</h3>
+          <p>Solve intricate cases by uncovering hidden clues and secrets.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-9" data-context="Cooking simulation game with colorful ingredients and cooking utensils in a modern kitchen" width="600" height="400" src="/assets/site-games-gallery-image-9.webp" alt="Chef Master game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Chef Master</h3>
+          <p>Create delicious dishes and manage your own restaurant empire.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-10" data-context="Adventure game showing explorer character in ancient temple ruins with treasure and traps" width="600" height="400" src="/assets/site-games-gallery-image-10.webp" alt="Temple Explorer game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Temple Explorer</h3>
+          <p>Navigate ancient ruins and discover legendary treasures.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-11" data-context="Card game with fantasy-themed playing cards featuring dragons and wizards on a magical table" width="600" height="400" src="/assets/site-games-gallery-image-11.webp" alt="Dragon Cards game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Dragon Cards</h3>
+          <p>Master strategic card battles with mythical creatures.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-12" data-context="Tower defense game showing defensive towers protecting a path from enemy waves, colorful strategic layout" width="600" height="400" src="/assets/site-games-gallery-image-12.webp" alt="Tower Defense Pro game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Tower Defense Pro</h3>
+          <p>Build strategic defenses to stop endless enemy waves.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-13" data-context="Ninja action game with stealthy character jumping between rooftops at night in Japanese setting" width="600" height="400" src="/assets/site-games-gallery-image-13.webp" alt="Shadow Ninja game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Shadow Ninja</h3>
+          <p>Master stealth and combat in this fast-paced ninja adventure.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-14" data-context="Farm simulation game with crops, animals, and barn in a sunny countryside landscape" width="600" height="400" src="/assets/site-games-gallery-image-14.webp" alt="Farm Paradise game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Farm Paradise</h3>
+          <p>Grow crops and raise animals in your peaceful countryside farm.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-15" data-context="Basketball game showing players dunking on an indoor court with stadium crowd" width="600" height="400" src="/assets/site-games-gallery-image-15.webp" alt="Hoops Legend game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Hoops Legend</h3>
+          <p>Slam dunk your way to basketball championship glory.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-16" data-context="Pirate adventure game with ship sailing on stormy seas, treasure map and skull flag" width="600" height="400" src="/assets/site-games-gallery-image-16.webp" alt="Pirate Voyage game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Pirate Voyage</h3>
+          <p>Sail the seven seas in search of hidden pirate treasure.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-17" data-context="Robot battle game with futuristic mechs fighting in a sci-fi arena with explosions" width="600" height="400" src="/assets/site-games-gallery-image-17.webp" alt="Mech Warriors game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Mech Warriors</h3>
+          <p>Pilot giant robots in explosive arena combat battles.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-18" data-context="Word puzzle game with colorful letter tiles and crossword-style layout on bright background" width="600" height="400" src="/assets/site-games-gallery-image-18.webp" alt="Word Master game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Word Master</h3>
+          <p>Challenge your vocabulary with addictive word puzzles.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-19" data-context="Dinosaur survival game showing prehistoric creatures in a lush jungle environment" width="600" height="400" src="/assets/site-games-gallery-image-19.webp" alt="Dino World game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Dino World</h3>
+          <p>Survive and thrive in a land ruled by mighty dinosaurs.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-20" data-context="Racing game with motorcycles speeding on a winding mountain road with scenic views" width="600" height="400" src="/assets/site-games-gallery-image-20.webp" alt="Bike Rush game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Bike Rush</h3>
+          <p>Race through dangerous mountain roads on powerful bikes.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-21" data-context="Horror game showing dark haunted mansion with ghostly figures and eerie lighting" width="600" height="400" src="/assets/site-games-gallery-image-21.webp" alt="Haunted Manor game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Haunted Manor</h3>
+          <p>Explore a terrifying mansion filled with supernatural mysteries.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-22" data-context="Fishing game with peaceful lake scene, fishing rod, and colorful fish jumping from water" width="600" height="400" src="/assets/site-games-gallery-image-22.webp" alt="Fishing Paradise game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Fishing Paradise</h3>
+          <p>Cast your line and reel in the biggest catches of the day.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-23" data-context="Boxing game showing fighters in a ring with dramatic lighting and crowd" width="600" height="400" src="/assets/site-games-gallery-image-23.webp" alt="Boxing Champion game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Boxing Champion</h3>
+          <p>Fight your way to the top in intense boxing matches.</p>
+        </div>
+      </article>
+      <article class="game-card">
+        <div class="game-card-image">
+          <img data-placeholder="games-gallery-image-24" data-context="Music rhythm game with colorful notes flowing on a neon track with dance theme" width="600" height="400" src="/assets/site-games-gallery-image-24.webp" alt="Rhythm Beat game thumbnail" data-element-type="icon" data-icon-type="image">
+        </div>
+        <div class="game-card-content">
+          <h3>Rhythm Beat</h3>
+          <p>Hit the perfect notes and dance to the music in this rhythm game.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+  <div class="games-gallery-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 60" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 L0,28 Q20,26 40,29 T80,27 Q100,30 120,26 T160,28 Q180,27 200,29 T240,26 Q260,28 280,27 T320,29 Q340,26 360,28 T400,27 Q420,29 440,26 T480,28 Q500,27 520,29 T560,26 Q580,28 600,27 T640,29 Q660,26 680,28 T720,27 Q740,29 760,26 T800,28 Q820,27 840,29 T880,26 Q900,28 920,27 T960,29 Q980,26 1000,28 T1040,27 Q1060,29 1080,26 T1120,28 Q1140,27 1160,29 T1200,26 L1200,60 Z" fill="#070A18"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="games-collections-section" data-layout-spec="Games-collections">
+  <div class="collections-container">
+    <div class="collections-header">
+      <h2>Collections</h2>
+      <p>Editorial groupings that feel like issues: quick to understand, easy to browse.</p>
+    </div>
+    
+    <div class="collections-layout">
+      <div class="collections-list">
+        <div class="collection-block">
+          <h3>Quick Arcade</h3>
+          <p>Fast-paced action games that deliver instant adrenaline and high scores in minutes.</p>
+        </div>
+        
+        <div class="collection-block">
+          <h3>Puzzle &amp; Logic</h3>
+          <p>Brain-bending challenges that reward strategic thinking and clever problem-solving.</p>
+        </div>
+        
+        <div class="collection-block">
+          <h3>Racing &amp; Drift</h3>
+          <p>High-speed thrills with realistic physics and competitive leaderboards for speed demons.</p>
+        </div>
+        
+        <div class="collection-block">
+          <h3>Retro Pixel</h3>
+          <p>Nostalgic 8-bit and 16-bit adventures that capture the golden age of gaming.</p>
+        </div>
+        
+        <div class="collection-block">
+          <h3>Multiplayer Local</h3>
+          <p>Share the screen with friends for competitive battles and cooperative missions.</p>
+        </div>
+        
+        <div class="collection-block">
+          <h3>Chill &amp; Cozy</h3>
+          <p>Relaxing experiences with soothing gameplay perfect for unwinding after a long day.</p>
+        </div>
+      </div>
+      
+      <div class="collections-imagery">
+        <div class="imagery-tile imagery-tile-1">
+          <img data-placeholder="games-collections-image-1" data-context="Vibrant arcade game screenshot showing colorful pixel art characters in action, neon colors, retro gaming aesthetic with modern polish, dynamic composition for online gaming website" width="600" height="400" src="/assets/site-games-collections-image-1.webp" alt="Quick arcade game collection preview">
+        </div>
+        
+        <div class="imagery-tile imagery-tile-2">
+          <img data-placeholder="games-collections-image-2" data-context="Racing game screenshot with sleek sports car drifting on neon-lit track, motion blur effects, cyberpunk racing aesthetic, dramatic angle for online gaming collections" width="600" height="400" src="/assets/site-games-collections-image-2.webp" alt="Racing and drift game collection preview">
+        </div>
+        
+        <div class="imagery-tile imagery-tile-3">
+          <img data-placeholder="games-collections-image-3" data-context="Cozy puzzle game scene with warm lighting, relaxing atmosphere, pastel colors, peaceful gaming environment showing logic game elements, inviting composition for gaming website" width="600" height="400" src="/assets/site-games-collections-image-3.webp" alt="Puzzle and chill games collection preview">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="collections-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewbox="0 0 1200 64" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="collections-divider-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#FF2DAA;stop-opacity:1"></stop>
+          <stop offset="50%" style="stop-color:#7C4DFF;stop-opacity:1"></stop>
+          <stop offset="100%" style="stop-color:#00D7FF;stop-opacity:1"></stop>
+        </linearGradient>
+        <pattern id="halftone-texture" x="0" y="0" width="4" height="4" patternunits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="0.8" fill="rgba(255,255,255,0.08)"></circle>
+        </pattern>
+      </defs>
+      <rect x="0" y="0" width="1200" height="64" fill="url(#collections-divider-gradient)"></rect>
+      <rect x="0" y="0" width="1200" height="64" fill="url(#halftone-texture)"></rect>
+    </svg>
+  </div>
+</section>
+
+<section class="games-cta-section" data-layout-spec="Games-cta">
+  <div class="games-cta-container">
+    <div class="games-cta-accent-bar"></div>
+    <div class="games-cta-content">
+      <h2>Missing a favorite?</h2>
+      <p>Send a suggestion—new requests help shape the next featured issue.</p>
+      <a href="/contact" class="games-cta-btn">Suggest a game</a>
+    </div>
+  </div>
+</section>
+  </main>
+  
+  <footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-top">
+      <div class="footer-column footer-about">
+        <img src="/assets/glol-games-123-com-online-gaming-logo.webp" alt="glol.games.//123.com" class="logo">
+        <p class="footer-tagline">Your ultimate destination for online gaming entertainment and community.</p>
+      </div>
+      
+      <div class="footer-column footer-links">
+        <h3 class="footer-heading">Quick Links</h3>
+        <ul class="footer-nav">
+          <li><a href="/games">Games</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column footer-contact">
+        <h3 class="footer-heading">Contact Us</h3>
+        <ul class="contact-list">
+          <li><i class="fas fa-envelope"></i> <a href="mailto:[business_email]">[business_email]</a></li>
+          <li><i class="fas fa-phone"></i> <a href="tel:[business_phone]">[business_phone]</a></li>
+          <li><a href="/"><i class="fas fa-map-marker-alt"></i> <span>[business_address]</span></a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column footer-social">
+        <h3 class="footer-heading">Connect With Us</h3>
+        <div class="social-links">
+          <a href="[facebook_handle]" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="[instagram_handle]" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="[whatsapp_handle]" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        <p class="copyright">© 2026 glol.games.//123.com. All rights reserved.</p>
+      </div>
+      <div class="footer-bottom-right">
+        <nav class="legal-links">
+          <a href="/privacy">Privacy Policy</a>
+          <span class="separator">•</span>
+          <a href="/terms">Terms &amp; Conditions</a>
+          <span class="separator">•</span>
+          <a href="/accessibility">Accessibility</a>
+        </nav>
+        <a href="https://zappy5.com" target="_blank" class="zappy-attribution">Generated by Zappy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  <a href="https://wa.me/[whatsapp_handle]" class="whatsapp-float" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  
+  <div data-integration="accessibility:toolbar"></div>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+
+    <script id="zappy-navbar-scroll-effect">
+    (function(){var nb=document.querySelector('nav.navbar,.navbar:not(.zappy-catalog-menu)');var cm=document.querySelector('.zappy-catalog-menu');if(!nb)return;var fb='rgba(11,16,32,0.85)';var th=60;nb.style.transition='background 0.3s ease,backdrop-filter 0.3s ease,-webkit-backdrop-filter 0.3s ease,box-shadow 0.3s ease';if(cm)cm.style.transition='background 0.3s ease,backdrop-filter 0.3s ease,-webkit-backdrop-filter 0.3s ease';function onS(){var y=window.scrollY||window.pageYOffset;if(y>th){nb.style.background=fb;nb.style.backdropFilter='blur(12px)';nb.style.webkitBackdropFilter='blur(12px)';nb.style.boxShadow='0 2px 16px rgba(0,0,0,0.12)';if(cm){cm.style.background=fb;cm.style.backdropFilter='blur(12px)';cm.style.webkitBackdropFilter='blur(12px)';}}else{nb.style.background='transparent';nb.style.backdropFilter='none';nb.style.webkitBackdropFilter='none';nb.style.boxShadow='none';if(cm){cm.style.background='transparent';cm.style.backdropFilter='none';cm.style.webkitBackdropFilter='none';}}}window.addEventListener('scroll',onS,{passive:true});onS();})();
+    </script>
+</body>
+</html>
